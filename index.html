@@ -1476,7 +1476,11 @@ function applyConfig(c){
 }
 
 
-// ============ INIT ============
+// ── PUBLIC FIREBASE CONFIG ──
+const firebaseConfig={apiKey:"AIzaSyAfhZmPh28_GsH1O0zq0SoqwbuO0C6EzX4",authDomain:"jl-repuestos.firebaseapp.com",databaseURL:"https://jl-repuestos-default-rtdb.firebaseio.com",projectId:"jl-repuestos",storageBucket:"jl-repuestos.firebasestorage.app",messagingSenderId:"179832923632",appId:"1:179832923632:web:597f90525d5b327d546935"};
+try{firebase.initializeApp(firebaseConfig);}catch(e){}
+const db=firebase.database();
+const SITE_REF='jlrepuestos/config';// ============ INIT ============
 buildBrandsEditor(); // slides editor is now static HTML
 renderBrandsTrack();
 renderProductsSection();
