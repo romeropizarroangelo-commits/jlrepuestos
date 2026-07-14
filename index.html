@@ -3321,5 +3321,820 @@ try{
 })();
 </script>
 
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JL MOTION 2026 · Capa de movimiento y profundidad
+     Aditiva y defensiva: no toca Firebase, carrito, buscador ni admin.
+     Todo se apaga con prefers-reduced-motion.
+     ═══════════════════════════════════════════════════════════════════ -->
+<style id="jl-motion-2026">
+:root{
+  --jlm-ease:cubic-bezier(.22,1,.36,1);
+  --jlm-ease-out:cubic-bezier(.16,1,.3,1);
+}
+
+/* ═══ 1. HERO CINEMATOGRÁFICO ═══
+   OJO: la altura debe ser un valor concreto, no `auto`.
+   Los slides heredan height:100%, y con `auto` se colapsan y la foto
+   deja de cubrir el hero. */
+.hero{height:min(88vh,780px);min-height:520px;}
+.hero .slides,.hero .slide{height:100%;}
+@media(max-width:768px){.hero{height:min(76vh,600px);min-height:440px;}}
+
+/* EL FALLO DE LAS PORTADAS:
+   .slide-bg va escalado (el zoom lento original), pero .slide no recortaba.
+   Resultado: el fondo de cada slide se derramaba sobre el de al lado y
+   asomaba una franja de la foto siguiente en el borde. Se recorta y listo. */
+.slide{overflow:hidden;}
+
+/* La foto respira: encuadre alto y un poco de holgura para que el parallax
+   nunca descubra un borde vacío (`scale` es independiente del `transform`
+   que ya usa el Ken Burns original). */
+.slide-bg{background-position:center 42%;scale:1.12;}
+
+/* Lienzo de partículas: encima del velo, debajo del texto */
+#jlm-dust{position:absolute;inset:0;z-index:1;pointer-events:none;}
+
+/* Viñeta suave: oscurece esquinas y funde con la barra de stats, sin tapar la foto */
+.hero::before{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(130% 90% at 50% 108%, rgba(212,0,0,.22), transparent 60%),
+    radial-gradient(150% 130% at 50% 45%, transparent 58%, rgba(0,0,0,.42) 100%),
+    linear-gradient(to top, rgba(7,8,10,.92) 0%, rgba(7,8,10,.35) 14%, transparent 32%);
+}
+
+/* Velo lateral: más contenido para que la imagen se lea */
+.slide-ov{
+  background:
+    radial-gradient(760px 380px at 6% 74%, rgba(212,0,0,.26), transparent 62%),
+    linear-gradient(95deg, rgba(7,8,10,.90) 0%, rgba(7,8,10,.66) 34%, rgba(7,8,10,.20) 62%, transparent 82%);
+}
+
+/* Aviso de scroll */
+#jlm-cue{
+  position:absolute;left:50%;bottom:26px;z-index:7;translate:-50% 0;
+  display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10.5px;
+  letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.62);
+}
+#jlm-cue i{
+  display:block;width:1px;height:38px;
+  background:linear-gradient(#FF453A,transparent);
+  animation:jlm-cue 2.1s ease-in-out infinite;
+}
+@keyframes jlm-cue{
+  0%  {transform:scaleY(0);transform-origin:top}
+  45% {transform:scaleY(1);transform-origin:top}
+  46% {transform:scaleY(1);transform-origin:bottom}
+  100%{transform:scaleY(0);transform-origin:bottom}
+}
+@media(max-width:768px){#jlm-cue{display:none;}}
+
+/* Entrada escalonada del texto en cada cambio de slide */
+.slide.act .slide-ct > *{animation:jlm-in .9s var(--jlm-ease) both;}
+.slide.act .slide-ct > *:nth-child(1){animation-delay:.05s}
+.slide.act .slide-ct > *:nth-child(2){animation-delay:.16s}
+.slide.act .slide-ct > *:nth-child(3){animation-delay:.26s}
+.slide.act .slide-ct > *:nth-child(4){animation-delay:.36s}
+@keyframes jlm-in{
+  from{opacity:0;transform:translateY(34px);filter:blur(6px);}
+  to{opacity:1;transform:none;filter:blur(0);}
+}
+/* Titular más rotundo y legible sobre foto.
+   Solo de tablet hacia arriba: en móvil manda el bloque móvil de más abajo,
+   si no, este max-width desborda la pantalla. */
+@media(min-width:769px){
+  .slide-ct{padding:0 clamp(24px,6vw,90px);max-width:720px;}
+  .slide-ct h1{
+    font-size:clamp(38px,5.9vw,80px);
+    line-height:.94;letter-spacing:.2px;
+    text-shadow:0 8px 40px rgba(0,0,0,.55);
+  }
+  .slide-ct p{font-size:clamp(14px,1.15vw,17px);text-shadow:0 2px 14px rgba(0,0,0,.5);}
+}
+
+/* ═══ 1b. RITMO Y TEXTURA EN LAS SECCIONES OSCURAS ═══ */
+.marcas-header::before,.ventas-sec::after{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:
+    linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(80% 70% at 50% 50%,#000,transparent 78%);
+  -webkit-mask-image:radial-gradient(80% 70% at 50% 50%,#000,transparent 78%);
+}
+
+/* ═══ 1c. BARRA DE CIFRAS: más relieve ═══ */
+.stats{transition:transform .5s var(--jlm-ease),box-shadow .5s var(--jlm-ease);}
+.stats:hover{transform:translateY(-3px);box-shadow:0 38px 74px rgba(212,0,0,.38),inset 0 1px 0 rgba(255,255,255,.25);}
+.stats .stat{transition:transform .35s var(--jlm-ease);}
+.stats .stat:hover{transform:translateY(-4px);}
+
+/* ═══ 1d. PESTAÑAS DE MARCA: la activa manda ═══ */
+.brand-tab-btn{transition:transform .3s var(--jlm-ease),box-shadow .3s var(--jlm-ease),border-color .3s;}
+.brand-tab-btn.on{transform:translateY(-4px);}
+.brand-tab-btn.on .brand-tab-logo img{filter:drop-shadow(0 6px 16px rgba(212,0,0,.28));}
+
+/* Barra de avance del autoplay del slider */
+#jlm-slidebar{
+  position:absolute;left:0;bottom:0;height:4px;width:0;z-index:7;
+  background:linear-gradient(90deg,#FF453A,#D40000);
+  box-shadow:0 0 16px rgba(212,0,0,.8);pointer-events:none;
+}
+#jlm-slidebar.run{animation:jlm-slidebar 5.5s linear forwards;}
+@keyframes jlm-slidebar{from{width:0}to{width:100%}}
+
+/* Flechas y puntos con más presencia */
+.arr{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.arr:hover{transform:scale(1.12);}
+
+/* ═══ 2. REVELADO CON ESCALONADO ═══
+   Uso la propiedad `translate`, no `transform`, para no pisar los hover existentes. */
+.jlm-rise{opacity:0;translate:0 34px;transition:opacity .85s var(--jlm-ease),translate .85s var(--jlm-ease);}
+.jlm-rise.jlm-on{opacity:1;translate:0 0;}
+
+/* Títulos de sección: barrido de máscara.
+   Sólo si el JS arrancó (html.jlm-js): si falla, el título se ve igual. */
+html.jlm-js .sec-ttl{
+  clip-path:inset(0 0 100% 0);
+  transition:clip-path 1s var(--jlm-ease);
+}
+html.jlm-js .sec-ttl.jlm-on{clip-path:inset(0 0 -20% 0);}
+
+/* ═══ 3. TARJETAS 3D CON REFLEJO ═══ */
+.jlm-scope{perspective:1100px;}
+.jlm-tilt{
+  position:relative;
+  transition:transform .35s var(--jlm-ease),box-shadow .35s var(--jlm-ease),rotate .5s var(--jlm-ease);
+  transform-style:preserve-3d;
+}
+.jlm-tilt.jlm-live{transition:transform .35s var(--jlm-ease),box-shadow .35s var(--jlm-ease),rotate .08s linear;}
+.jlm-tilt::after{
+  content:'';position:absolute;inset:0;z-index:4;pointer-events:none;
+  border-radius:inherit;opacity:0;transition:opacity .35s;
+  background:radial-gradient(420px circle at var(--jlm-mx,50%) var(--jlm-my,50%),rgba(255,255,255,.42),rgba(255,255,255,0) 58%);
+  mix-blend-mode:overlay;
+}
+.jlm-tilt:hover::after{opacity:1;}
+.truck-card,.pq-card,.ventas-card{position:relative;}
+
+/* ═══ 4. ONDA AL PULSAR (ripple) ═══ */
+.jlm-ripple{
+  position:absolute;border-radius:50%;pointer-events:none;z-index:5;
+  background:rgba(255,255,255,.45);transform:translate(-50%,-50%) scale(0);
+  animation:jlm-ripple .65s var(--jlm-ease-out) forwards;
+}
+@keyframes jlm-ripple{to{transform:translate(-50%,-50%) scale(1);opacity:0;}}
+
+/* ═══ 5. PIEZA QUE VUELA AL CARRITO ═══ */
+.jlm-fly{
+  position:fixed;z-index:99998;pointer-events:none;border-radius:12px;
+  object-fit:contain;background:#fff;box-shadow:0 18px 44px rgba(0,0,0,.28);
+}
+#cart-nav-btn.jlm-hit{animation:jlm-hit .5s var(--jlm-ease);}
+@keyframes jlm-hit{0%,100%{transform:scale(1)}40%{transform:scale(1.28)}}
+
+/* ═══ 6. CTA MAGNÉTICO ═══ */
+.nav-cta{will-change:transform;}
+
+/* ═══ 7. MARCAS: cinta reactiva al scroll ═══ */
+.mtrack{will-change:transform;}
+.marcas-header{position:relative;overflow:hidden;}
+.marcas-header > *{position:relative;z-index:1;}
+
+/* ═══ 8. PROFUNDIDAD EN SECCIONES OSCURAS ═══ */
+.ventas-sec{position:relative;overflow:hidden;}
+.ventas-sec::before{
+  content:'';position:absolute;inset:-20% -10%;z-index:0;pointer-events:none;
+  background:radial-gradient(50% 40% at 20% 0%,rgba(212,0,0,.18),transparent 60%),
+             radial-gradient(45% 40% at 85% 100%,rgba(212,0,0,.14),transparent 60%);
+}
+.ventas-sec > *{position:relative;z-index:1;}
+
+/* ═══ 9. BOTÓN WHATSAPP: burbuja de invitación ═══ */
+#jlm-wa-tip{
+  position:fixed;bottom:36px;right:96px;z-index:8001;
+  background:#fff;color:#111;border-radius:14px 14px 2px 14px;
+  padding:11px 16px;max-width:220px;
+  font-family:'Barlow',sans-serif;font-size:13.5px;line-height:1.45;
+  box-shadow:0 12px 34px rgba(0,0,0,.22);
+  opacity:0;transform:translateX(14px) scale(.94);pointer-events:none;
+  transition:opacity .45s var(--jlm-ease),transform .45s var(--jlm-ease);
+}
+#jlm-wa-tip.on{opacity:1;transform:none;pointer-events:auto;}
+#jlm-wa-tip b{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:800;
+  font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#25a34a;margin-bottom:2px;}
+#jlm-wa-tip .x{
+  position:absolute;top:-9px;right:-9px;width:24px;height:24px;border-radius:50%;
+  border:none;background:#111;color:#fff;font-size:14px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+@media(max-width:768px){#jlm-wa-tip{display:none;}}
+
+/* ═══ 10. IMÁGENES DE PRODUCTO: zoom más rico ═══ */
+.prod-card:hover .prod-img img{transform:scale(1.12) rotate(-1.2deg);}
+.prod-img{position:relative;}
+.prod-img::after{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;
+  background:linear-gradient(115deg,transparent 38%,rgba(212,0,0,.10) 50%,transparent 62%);
+}
+.prod-card:hover .prod-img::after{opacity:1;}
+
+/* ═══════════════════════════════════════════════════════
+   11. MÓVIL — aquí es donde se juega la venta
+   ═══════════════════════════════════════════════════════ */
+@media(max-width:768px){
+
+  /* Nada puede desbordar a lo ancho */
+  html,body{overflow-x:hidden;max-width:100%;}
+
+  /* ── Hero: texto abajo, como una portada de revista ── */
+  .hero{height:min(82vh,640px);min-height:480px;}
+  .slide{align-items:flex-end;}
+  .slide-ct{
+    padding:0 22px 74px !important;
+    max-width:100% !important;
+    width:100%;box-sizing:border-box;
+  }
+  .slide-ct h1{
+    font-size:clamp(30px,8.6vw,42px) !important;
+    line-height:1.02;letter-spacing:0;
+    text-shadow:0 6px 26px rgba(0,0,0,.6);
+  }
+  .slide-ct p{
+    font-size:14px;line-height:1.6;
+    color:rgba(255,255,255,.9);
+    text-shadow:0 2px 10px rgba(0,0,0,.6);
+    margin-bottom:20px;
+  }
+  .btn-hero{width:100%;justify-content:center;padding:15px 20px;font-size:14px;border-radius:12px;}
+  .sdiv{margin:12px 0 14px;}
+
+  /* Las portadas son panorámicas hechas para escritorio: al recortarlas en
+     vertical el sujeto se descentra. Empujo el encuadre hacia la izquierda,
+     que es donde suele estar el camión. */
+  .slide-bg{background-position:32% 45% !important;scale:1.06;}
+
+  /* El velo tira a vertical: el texto está abajo, no a la izquierda */
+  .slide-ov{
+    background:
+      radial-gradient(420px 260px at 15% 95%, rgba(212,0,0,.30), transparent 65%),
+      linear-gradient(to top, rgba(7,8,10,.94) 0%, rgba(7,8,10,.72) 34%, rgba(7,8,10,.28) 62%, rgba(7,8,10,.10) 100%);
+  }
+
+  /* Flechas fuera: en el móvil se desliza con el dedo */
+  .arrows{display:none;}
+  .dots{bottom:88px;}
+  .dot{height:4px;}
+
+  /* ── Barra de cifras: 2x2 limpio, sin desbordar ── */
+  .stats{
+    max-width:calc(100% - 28px);
+    margin:-34px auto 0;
+    padding:20px 14px;
+    border-radius:16px;
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+  }
+  .stats .stat{width:auto;padding:14px 8px;}
+  .stats .stat .num{font-size:30px;}
+  .stats .stat .lbl{font-size:9.5px;letter-spacing:1.4px;line-height:1.3;}
+  .stats .stat:nth-child(2)::before,.stats .stat:nth-child(4)::before{
+    content:'';position:absolute;left:0;top:16%;height:68%;width:1px;
+    background:linear-gradient(180deg,transparent,rgba(255,255,255,.4),transparent);
+  }
+  .stats .stat:nth-child(3)::after,.stats .stat:nth-child(4)::after{
+    content:'';position:absolute;top:0;left:8%;right:8%;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+  }
+
+  /* ── Respiración general ── */
+  .sec,.productos-sec,.trucks-sec,.ubic-sec{padding-left:18px;padding-right:18px;}
+  .sec-ttl{font-size:27px;line-height:1.1;}
+  .sec-sub{font-size:13.5px;}
+
+  /* ── Barra de acciones fija: buscar, cotizar y WhatsApp siempre a mano ── */
+  #jlm-dock{
+    position:fixed;left:10px;right:10px;bottom:10px;z-index:8500;
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;
+    padding:7px;border-radius:18px;
+    background:rgba(14,15,18,.90);
+    backdrop-filter:blur(16px) saturate(150%);
+    -webkit-backdrop-filter:blur(16px) saturate(150%);
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 14px 40px rgba(0,0,0,.42);
+    transform:translateY(140%);
+    transition:transform .5s var(--jlm-ease);
+  }
+  #jlm-dock.on{transform:none;}
+  #jlm-dock button,#jlm-dock a{
+    position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    padding:9px 4px;border:none;border-radius:13px;cursor:pointer;
+    background:transparent;color:#fff;text-decoration:none;
+    font-family:'Barlow Condensed',sans-serif;font-weight:800;
+    font-size:10.5px;letter-spacing:1.1px;text-transform:uppercase;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #jlm-dock svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2.1;}
+  #jlm-dock .d-quote{background:linear-gradient(135deg,#EE1C16,#B00000);box-shadow:0 6px 18px rgba(212,0,0,.4);}
+  #jlm-dock .d-wa{background:#25D366;box-shadow:0 6px 18px rgba(37,211,102,.35);}
+  #jlm-dock .d-wa svg{fill:currentColor;stroke:none;}
+  #jlm-dock .d-badge{
+    position:absolute;top:3px;right:calc(50% - 24px);
+    min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+    background:#fff;color:#B00000;border:2px solid rgba(14,15,18,.9);
+    font-size:10px;font-weight:800;line-height:14px;text-align:center;
+    transform:scale(0);transition:transform .3s var(--jlm-ease);
+  }
+  #jlm-dock .d-badge.on{transform:scale(1);}
+
+  /* El botón verde flotante sobra: su sitio está en la barra */
+  #wa-float{display:none !important;}
+  #jlp-top{bottom:88px;right:14px;}
+
+  /* Hueco para que la barra no tape el pie */
+  body{padding-bottom:78px;}
+}
+
+/* ═══ MOVIMIENTO REDUCIDO: todo se apaga ═══ */
+@media (prefers-reduced-motion:reduce){
+  .jlm-rise{opacity:1 !important;translate:none !important;transition:none !important;}
+  .sec-ttl{clip-path:none !important;transition:none !important;}
+  .slide.act .slide-ct > *{animation:none !important;}
+  #jlm-slidebar,#jlm-dust,#jlm-wa-tip{display:none !important;}
+  .jlm-tilt::after{display:none !important;}
+  .hero::before{background:none;}
+}
+</style>
+
+<script id="jl-motion-2026-js">
+(function(){
+'use strict';
+
+var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var FINE   = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+var hero   = document.querySelector('.hero');
+
+/* Marca de que el JS vive: habilita los efectos que ocultan contenido */
+if(!REDUCE) document.documentElement.classList.add('jlm-js');
+
+function on(el,ev,fn,op){ if(el) el.addEventListener(ev,fn,op||{passive:true}); }
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+
+/* ──────────────────────────────────────────────
+   VELOCIDAD DE SCROLL (la usan la cinta y el parallax)
+   ────────────────────────────────────────────── */
+var lastY = window.scrollY || 0, vel = 0;
+function readScroll(){
+  var y = window.scrollY || 0;
+  vel = y - lastY;
+  lastY = y;
+}
+on(window,'scroll',readScroll);
+
+/* ──────────────────────────────────────────────
+   1. HERO — partículas, parallax, barra y swipe
+   ────────────────────────────────────────────── */
+if(hero && !REDUCE){
+
+  /* 1a. Polvo de carretera en canvas */
+  try{
+    var cv = document.createElement('canvas');
+    cv.id = 'jlm-dust';
+    hero.appendChild(cv);
+    var ctx = cv.getContext('2d');
+    var DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var W = 0, H = 0, parts = [], visible = true;
+
+    function build(){
+      var r = hero.getBoundingClientRect();
+      W = r.width; H = r.height;
+      cv.width = W * DPR; cv.height = H * DPR;
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+      var n = Math.min(90, Math.round(W / 16));
+      parts = [];
+      for(var i=0;i<n;i++){
+        parts.push({
+          x: Math.random()*W,
+          y: Math.random()*H,
+          r: Math.random()*1.9 + .4,
+          s: Math.random()*.45 + .12,     // velocidad horizontal
+          d: Math.random()*.5 - .25,      // deriva vertical
+          a: Math.random()*.45 + .12,     // opacidad
+          red: Math.random() < .14        // algunas chispas rojas
+        });
+      }
+    }
+    build();
+    on(window,'resize',build);
+
+    /* Solo dibuja si el hero está a la vista */
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(e){ visible = e[0].isIntersecting; },{threshold:0})
+        .observe(hero);
+    }
+
+    (function draw(){
+      requestAnimationFrame(draw);
+      if(!visible || !W) return;
+      ctx.clearRect(0,0,W,H);
+      for(var i=0;i<parts.length;i++){
+        var p = parts[i];
+        p.x += p.s + Math.abs(vel)*.012;
+        p.y += p.d;
+        if(p.x > W + 4){ p.x = -4; p.y = Math.random()*H; }
+        if(p.y < -4) p.y = H + 4;
+        if(p.y > H + 4) p.y = -4;
+        ctx.beginPath();
+        ctx.fillStyle = p.red
+          ? 'rgba(255,70,58,' + (p.a + .2) + ')'
+          : 'rgba(255,255,255,' + p.a + ')';
+        ctx.arc(p.x, p.y, p.r, 0, 6.2832);
+        ctx.fill();
+      }
+    })();
+  }catch(e){}
+
+  /* 1b. Parallax del fondo del slide (usa `translate`, no pisa el Ken Burns) */
+  try{
+    var bgs = hero.querySelectorAll('.slide-bg');
+    var pRaf = false;
+    function parallax(){
+      pRaf = false;
+      var y = window.scrollY || 0;
+      if(y > window.innerHeight) return;
+      /* Tope de 40px: es la holgura que da el scale:1.12 del CSS */
+      var off = Math.min(y * 0.18, 40);
+      for(var i=0;i<bgs.length;i++) bgs[i].style.translate = '0 ' + off.toFixed(1) + 'px';
+    }
+    on(window,'scroll',function(){
+      if(!pRaf){ pRaf = true; requestAnimationFrame(parallax); }
+    });
+    parallax();
+  }catch(e){}
+
+  /* 1c. Barra de avance del autoplay, sincronizada con el slider real */
+  try{
+    var sbar = document.createElement('div');
+    sbar.id = 'jlm-slidebar';
+    hero.appendChild(sbar);
+    function restartBar(){
+      sbar.classList.remove('run');
+      void sbar.offsetWidth;          // fuerza reinicio de la animación
+      sbar.classList.add('run');
+    }
+    /* Envuelvo updSlider sin modificar su lógica */
+    if(typeof window.updSlider === 'function'){
+      var _upd = window.updSlider;
+      window.updSlider = function(){
+        var r = _upd.apply(this, arguments);
+        restartBar();
+        return r;
+      };
+    }
+    restartBar();
+  }catch(e){}
+
+  /* 1d. Aviso de scroll, se desvanece al bajar */
+  try{
+    var cue = document.createElement('div');
+    cue.id = 'jlm-cue';
+    cue.innerHTML = '<span>Scroll</span><i></i>';
+    hero.appendChild(cue);
+    on(window,'scroll',function(){
+      cue.style.opacity = (window.scrollY || 0) > 120 ? '0' : '1';
+      cue.style.transition = 'opacity .4s';
+    });
+  }catch(e){}
+
+  /* 1e. Deslizar con el dedo para cambiar de slide */
+  try{
+    var tx = 0, ty = 0;
+    hero.addEventListener('touchstart', function(e){
+      tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+    }, {passive:true});
+    hero.addEventListener('touchend', function(e){
+      var dx = e.changedTouches[0].clientX - tx;
+      var dy = e.changedTouches[0].clientY - ty;
+      if(Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;   // fue scroll vertical
+      if(dx < 0 && typeof window.nextSlide === 'function') window.nextSlide();
+      if(dx > 0 && typeof window.prevSlide === 'function') window.prevSlide();
+      if(typeof window.resetTimer === 'function') window.resetTimer();
+    }, {passive:true});
+  }catch(e){}
+}
+
+/* ──────────────────────────────────────────────
+   2. REVELADO ESCALONADO + TARJETAS 3D
+   Se vuelve a aplicar cuando el admin/Firebase repinta productos.
+   ────────────────────────────────────────────── */
+var SCOPES = ['.products-grid','.trucks-grid','.pq-grid','.ventas-grid','.cat-grid'];
+var TILTS  = '.prod-card,.truck-card,.pq-card,.ventas-card,.cat-card';
+
+var riseObs = ('IntersectionObserver' in window) ? new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(!en.isIntersecting) return;
+    en.target.classList.add('jlm-on');
+    riseObs.unobserve(en.target);
+  });
+}, {threshold:.12, rootMargin:'0px 0px -40px 0px'}) : null;
+
+function enhance(){
+  if(REDUCE) return;
+  SCOPES.forEach(function(sel){
+    document.querySelectorAll(sel).forEach(function(grid){
+      grid.classList.add('jlm-scope');
+      var kids = grid.children, shown = 0;
+      for(var i=0;i<kids.length;i++){
+        var k = kids[i];
+        if(k.classList.contains('jlm-rise')) continue;
+        k.classList.add('jlm-rise');
+        k.style.transitionDelay = Math.min(shown * 70, 420) + 'ms';
+        shown++;
+        if(riseObs) riseObs.observe(k); else k.classList.add('jlm-on');
+      }
+    });
+  });
+  if(FINE){
+    document.querySelectorAll(TILTS).forEach(function(c){ c.classList.add('jlm-tilt'); });
+  }
+  /* Títulos de sección */
+  document.querySelectorAll('.sec-ttl').forEach(function(t){
+    if(t.classList.contains('jlm-seen')) return;
+    t.classList.add('jlm-seen');
+    if(riseObs){
+      new IntersectionObserver(function(e,o){
+        if(e[0].isIntersecting){ e[0].target.classList.add('jlm-on'); o.disconnect(); }
+      },{threshold:.4}).observe(t);
+    } else { t.classList.add('jlm-on'); }
+  });
+}
+enhance();
+
+/* Reaplicar cuando cambian los productos / camiones (render dinámico) */
+try{
+  if('MutationObserver' in window){
+    var mo = new MutationObserver(function(){ enhance(); });
+    ['products-panels','trucks-grid'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) mo.observe(el, {childList:true, subtree:true});
+    });
+  }
+}catch(e){}
+
+/* Inclinación 3D + reflejo, por delegación (sobrevive a los repintados) */
+if(FINE && !REDUCE){
+  document.addEventListener('mousemove', function(e){
+    var card = e.target.closest && e.target.closest('.jlm-tilt');
+    if(!card) return;
+    var r  = card.getBoundingClientRect();
+    var px = (e.clientX - r.left) / r.width;
+    var py = (e.clientY - r.top)  / r.height;
+    var rx = (py - .5) * -7;      // grados sobre X
+    var ry = (px - .5) *  9;      // grados sobre Y
+    var ang = Math.sqrt(rx*rx + ry*ry);
+    card.classList.add('jlm-live');
+    /* `rotate` es independiente de `transform`: el hover original sigue intacto */
+    card.style.rotate = ang ? (rx/ang) + ' ' + (ry/ang) + ' 0 ' + ang.toFixed(2) + 'deg' : '';
+    card.style.setProperty('--jlm-mx', (px*100).toFixed(1) + '%');
+    card.style.setProperty('--jlm-my', (py*100).toFixed(1) + '%');
+  }, {passive:true});
+
+  document.addEventListener('mouseout', function(e){
+    var card = e.target.closest && e.target.closest('.jlm-tilt');
+    if(!card || (e.relatedTarget && card.contains(e.relatedTarget))) return;
+    card.classList.remove('jlm-live');
+    card.style.rotate = '';
+  }, {passive:true});
+}
+
+/* ──────────────────────────────────────────────
+   3. CINTA DE MARCAS REACTIVA AL SCROLL
+   Sustituye la animación CSS por un bucle propio:
+   acelera al bajar, retrocede al subir.
+   ────────────────────────────────────────────── */
+if(!REDUCE){
+  try{
+    var track = document.getElementById('mtrack');
+    if(track){
+      var mx = 0, half = 0, paused = false;
+      function measure(){ half = track.scrollWidth / 2; }
+
+      function boot(){
+        track.style.animation = 'none';
+        track.style.webkitAnimation = 'none';
+        measure();
+      }
+      boot();
+      on(window,'resize',measure);
+
+      if('MutationObserver' in window){
+        new MutationObserver(function(){ boot(); }).observe(track,{childList:true});
+      }
+      track.addEventListener('mouseenter', function(){ paused = true; });
+      track.addEventListener('mouseleave', function(){ paused = false; });
+
+      var seen = false;
+      if('IntersectionObserver' in window){
+        new IntersectionObserver(function(e){ seen = e[0].isIntersecting; },{threshold:0})
+          .observe(track);
+      } else { seen = true; }
+
+      (function run(){
+        requestAnimationFrame(run);
+        if(!seen || !half) return;
+        var base = paused ? 0 : 0.9;
+        /* el scroll empuja la cinta: hacia abajo acelera, hacia arriba la invierte */
+        var push = clamp(vel * 0.45, -26, 26);
+        mx -= (base + push);
+        if(mx <= -half) mx += half;
+        if(mx > 0)      mx -= half;
+        track.style.transform = 'translateX(' + mx.toFixed(2) + 'px)';
+      })();
+    }
+  }catch(e){}
+}
+
+/* ──────────────────────────────────────────────
+   4. ONDA AL PULSAR EN LOS BOTONES
+   ────────────────────────────────────────────── */
+if(!REDUCE){
+  var RIPPLE = '.btn-hero,.btn-dl,.btn-ch,.vc-btn,.btn-quote,.prod-add-btn,.nav-cta,.btn-dir,.btn-send-wa,.btn-send-quote';
+  document.addEventListener('pointerdown', function(e){
+    var b = e.target.closest && e.target.closest(RIPPLE);
+    if(!b) return;
+    var cs = getComputedStyle(b);
+    if(cs.position === 'static') b.style.position = 'relative';
+    if(cs.overflow !== 'hidden') b.style.overflow = 'hidden';
+    var r = b.getBoundingClientRect();
+    var size = Math.max(r.width, r.height) * 2.2;
+    var s = document.createElement('span');
+    s.className = 'jlm-ripple';
+    s.style.width = s.style.height = size + 'px';
+    s.style.left = (e.clientX - r.left) + 'px';
+    s.style.top  = (e.clientY - r.top)  + 'px';
+    b.appendChild(s);
+    setTimeout(function(){ s.remove(); }, 700);
+  }, {passive:true});
+}
+
+/* ──────────────────────────────────────────────
+   5. LA PIEZA VUELA AL CARRITO
+   Solo efecto visual: no toca addToCart ni el estado.
+   ────────────────────────────────────────────── */
+if(!REDUCE){
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('.prod-add-btn,.so-card-add');
+    if(!btn) return;
+    /* En escritorio vuela al carrito del nav; en móvil, al botón de la barra inferior */
+    var cart = document.getElementById('cart-nav-btn');
+    if(!cart || !cart.offsetParent){
+      cart = document.querySelector('#jlm-dock .d-quote');
+    }
+    if(!cart || !cart.offsetParent) return;
+
+    var card = btn.closest('.prod-card,.so-card');
+    var img  = card && card.querySelector('img');
+    if(!img || !img.src) return;
+
+    var from = img.getBoundingClientRect();
+    var to   = cart.getBoundingClientRect();
+    var fly  = document.createElement('img');
+    fly.src = img.src;
+    fly.className = 'jlm-fly';
+    fly.style.left   = from.left + 'px';
+    fly.style.top    = from.top + 'px';
+    fly.style.width  = from.width + 'px';
+    fly.style.height = from.height + 'px';
+    document.body.appendChild(fly);
+
+    var dx = (to.left + to.width/2)  - (from.left + from.width/2);
+    var dy = (to.top  + to.height/2) - (from.top  + from.height/2);
+
+    if(fly.animate){
+      fly.animate([
+        {transform:'translate(0,0) scale(1)', opacity:1},
+        {transform:'translate(' + dx*.55 + 'px,' + (dy*.35 - 70) + 'px) scale(.65)', opacity:.95, offset:.55},
+        {transform:'translate(' + dx + 'px,' + dy + 'px) scale(.12)', opacity:.15}
+      ], {duration:800, easing:'cubic-bezier(.5,0,.35,1)'}).onfinish = function(){
+        fly.remove();
+        cart.classList.add('jlm-hit');
+        setTimeout(function(){ cart.classList.remove('jlm-hit'); }, 520);
+      };
+    } else {
+      fly.remove();
+    }
+  }, {passive:true});
+}
+
+/* ──────────────────────────────────────────────
+   6. CTA "COTIZAR" MAGNÉTICO
+   ────────────────────────────────────────────── */
+if(FINE && !REDUCE){
+  document.querySelectorAll('.nav-cta').forEach(function(el){
+    el.addEventListener('mousemove', function(e){
+      var r = el.getBoundingClientRect();
+      var x = (e.clientX - (r.left + r.width/2))  * .28;
+      var y = (e.clientY - (r.top  + r.height/2)) * .38;
+      el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+    });
+    el.addEventListener('mouseleave', function(){ el.style.transform = ''; });
+  });
+}
+
+/* ──────────────────────────────────────────────
+   7. BARRA DE ACCIONES EN MÓVIL
+   La web original esconde buscar y carrito en el móvil.
+   Esto los devuelve, sin tocar sus funciones: solo las llama.
+   ────────────────────────────────────────────── */
+var dock = null;
+try{
+  if(window.matchMedia('(max-width:768px)').matches){
+    dock = document.createElement('div');
+    dock.id = 'jlm-dock';
+    dock.innerHTML =
+      '<button type="button" class="d-search" aria-label="Buscar repuestos">' +
+        '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4-4" stroke-linecap="round"/></svg>' +
+        '<span>Buscar</span>' +
+      '</button>' +
+      '<button type="button" class="d-quote" aria-label="Mi cotización">' +
+        '<svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/>' +
+        '<path d="M1.5 2h3.2l2.4 12.1a1.8 1.8 0 0 0 1.8 1.4h8.7a1.8 1.8 0 0 0 1.8-1.4L22 6H6" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+        '<span>Cotizar</span>' +
+        '<em class="d-badge" id="jlm-dock-badge">0</em>' +
+      '</button>' +
+      '<a class="d-wa" href="https://wa.me/51972119725?text=Hola%2C%20consulto%20por%20un%20repuesto" target="_blank" rel="noopener" aria-label="WhatsApp">' +
+        '<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884"/></svg>' +
+        '<span>WhatsApp</span>' +
+      '</a>';
+    document.body.appendChild(dock);
+
+    dock.querySelector('.d-search').addEventListener('click', function(){
+      if(typeof window.toggleSearch === 'function') window.toggleSearch();
+    });
+    dock.querySelector('.d-quote').addEventListener('click', function(){
+      if(typeof window.toggleCart === 'function') window.toggleCart();
+    });
+
+    /* Aparece en cuanto el visitante empieza a bajar */
+    var showDock = function(){
+      dock.classList.toggle('on', (window.scrollY || 0) > 200);
+    };
+    on(window,'scroll',showDock);
+    showDock();
+
+    /* El contador refleja el carrito real: leo el badge que ya mantiene la web */
+    var src = document.getElementById('cart-count');
+    var badge = document.getElementById('jlm-dock-badge');
+    if(src && badge && 'MutationObserver' in window){
+      var syncBadge = function(){
+        var n = parseInt((src.textContent || '0').trim(), 10) || 0;
+        badge.textContent = n;
+        badge.classList.toggle('on', n > 0);
+      };
+      new MutationObserver(syncBadge).observe(src, {childList:true, characterData:true, subtree:true});
+      syncBadge();
+    }
+  }
+}catch(e){}
+
+/* ──────────────────────────────────────────────
+   8. BURBUJA DE WHATSAPP (una vez por sesión, solo escritorio)
+   ────────────────────────────────────────────── */
+if(!REDUCE){
+  try{
+    if(!sessionStorage.getItem('jlm_wa_tip')){
+      setTimeout(function(){
+        var wa = document.getElementById('wa-float');
+        if(!wa) return;
+        var tip = document.createElement('div');
+        tip.id = 'jlm-wa-tip';
+        tip.innerHTML = '<button class="x" aria-label="Cerrar">&times;</button>' +
+                        '<b>¿Buscas un repuesto?</b>' +
+                        'Escríbenos por WhatsApp y te cotizamos al toque.';
+        document.body.appendChild(tip);
+        requestAnimationFrame(function(){ tip.classList.add('on'); });
+
+        tip.querySelector('.x').addEventListener('click', function(ev){
+          ev.stopPropagation();
+          tip.classList.remove('on');
+          sessionStorage.setItem('jlm_wa_tip','1');
+          setTimeout(function(){ tip.remove(); }, 500);
+        });
+        tip.addEventListener('click', function(){ wa.click(); });
+
+        setTimeout(function(){
+          tip.classList.remove('on');
+          sessionStorage.setItem('jlm_wa_tip','1');
+          setTimeout(function(){ tip.remove(); }, 600);
+        }, 9000);
+      }, 6000);
+    }
+  }catch(e){}
+}
+
+})();
+</script>
+
 </body>
 </html>
