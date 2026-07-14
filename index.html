@@ -3322,6 +3322,7 @@ try{
 </script>
 
 
+
 <!-- ═══════════════════════════════════════════════════════════════════
      JL MOTION 2026 · Capa de movimiento y profundidad
      Aditiva y defensiva: no toca Firebase, carrito, buscador ni admin.
@@ -3549,13 +3550,49 @@ html.jlm-js .sec-ttl.jlm-on{clip-path:inset(0 0 -20% 0);}
   /* Nada puede desbordar a lo ancho */
   html,body{overflow-x:hidden;max-width:100%;}
 
-  /* ── Hero: texto abajo, como una portada de revista ── */
-  .hero{height:min(82vh,640px);min-height:480px;}
-  .slide{align-items:flex-end;}
+  /* ── Hero: la foto arriba, entera; el texto debajo ──
+     Las portadas son panorámicas hechas para escritorio. Recortarlas a
+     vertical solo deja ver un 30% y el encuadre sale absurdo.
+     Solución: una banda de foto en 16:9 (la proporción de una portada) y el
+     texto en un bloque debajo. Al recortar una panorámica a 16:9 se pierde
+     poquísimo, en vez del 70% que se perdía al forzarla a vertical. */
+  .hero{height:auto;min-height:0;background:var(--carbon,#0B0D10);}
+  .hero .slides,.hero .slide{height:auto;}
+  .slide{align-items:stretch;flex-direction:column;background:var(--carbon,#0B0D10);}
+  .hero::before{display:none;}   /* la viñeta sobra: ya no hay foto de fondo completo */
+
+  .slide-bg{
+    position:relative !important;
+    inset:auto !important;
+    width:100%;
+    aspect-ratio:16/9;
+    background-size:cover !important;
+    background-repeat:no-repeat;
+    background-position:center center !important;
+    background-color:var(--carbon,#0B0D10);
+    scale:1 !important;
+    transform:none !important;
+    translate:none !important;
+    flex:none;
+  }
+  /* El velo solo funde el borde inferior de la foto con el bloque de texto */
+  .slide-ov{
+    top:auto !important;bottom:auto !important;
+    position:absolute !important;
+    left:0;right:0;
+    /* se coloca sobre la banda de la foto */
+    height:0;
+    background:none !important;
+  }
+
   .slide-ct{
-    padding:0 22px 74px !important;
+    position:relative;z-index:2;
+    padding:22px 22px 78px !important;
     max-width:100% !important;
     width:100%;box-sizing:border-box;
+    background:
+      radial-gradient(120% 90% at 12% 0%, rgba(212,0,0,.20), transparent 60%),
+      var(--carbon,#0B0D10);
   }
   .slide-ct h1{
     font-size:clamp(30px,8.6vw,42px) !important;
@@ -3571,21 +3608,10 @@ html.jlm-js .sec-ttl.jlm-on{clip-path:inset(0 0 -20% 0);}
   .btn-hero{width:100%;justify-content:center;padding:15px 20px;font-size:14px;border-radius:12px;}
   .sdiv{margin:12px 0 14px;}
 
-  /* Las portadas son panorámicas hechas para escritorio: al recortarlas en
-     vertical el sujeto se descentra. Empujo el encuadre hacia la izquierda,
-     que es donde suele estar el camión. */
-  .slide-bg{background-position:32% 45% !important;scale:1.06;}
-
-  /* El velo tira a vertical: el texto está abajo, no a la izquierda */
-  .slide-ov{
-    background:
-      radial-gradient(420px 260px at 15% 95%, rgba(212,0,0,.30), transparent 65%),
-      linear-gradient(to top, rgba(7,8,10,.94) 0%, rgba(7,8,10,.72) 34%, rgba(7,8,10,.28) 62%, rgba(7,8,10,.10) 100%);
-  }
-
-  /* Flechas fuera: en el móvil se desliza con el dedo */
+  /* Flechas fuera: en el móvil se desliza con el dedo.
+     Los puntos se posan justo sobre el borde inferior de la foto (16:9). */
   .arrows{display:none;}
-  .dots{bottom:88px;}
+  .dots{bottom:auto;top:calc(56.25vw - 16px);}
   .dot{height:4px;}
 
   /* ── Barra de cifras: 2x2 limpio, sin desbordar ── */
@@ -3613,9 +3639,23 @@ html.jlm-js .sec-ttl.jlm-on{clip-path:inset(0 0 -20% 0);}
   .sec-ttl{font-size:27px;line-height:1.1;}
   .sec-sub{font-size:13.5px;}
 
-  /* ── Barra de acciones fija: buscar, cotizar y WhatsApp siempre a mano ── */
+  /* ── EL CARRITO DE COTIZACIÓN NO ENCAJABA ──
+     Tiene 460px de ancho fijo. En un móvil de 390px se salía 70px por la
+     izquierda y el contenido quedaba cortado. A pantalla completa. */
+  #cart-drawer{width:100%;max-width:100%;right:-100%;}
+  #cart-drawer.on{right:0;}
+  .cd-footer{padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));}
+
+  /* El modal de cotización, a ras de los bordes */
+  .qm-box{max-width:100%;}
+  .qm-body{padding:18px 18px 24px;}
+
+  /* ── Barra de acciones fija: buscar, cotizar y WhatsApp siempre a mano ──
+     z-index 4500: por encima del contenido y del nav (4000), pero POR DEBAJO
+     del modal de producto (5000), del carrito (7000), del buscador (8000) y
+     del cotizador (9000). Antes iba a 8500 y flotaba encima de todos ellos. */
   #jlm-dock{
-    position:fixed;left:10px;right:10px;bottom:10px;z-index:8500;
+    position:fixed;left:10px;right:10px;bottom:10px;z-index:4500;
     display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;
     padding:7px;border-radius:18px;
     background:rgba(14,15,18,.90);
@@ -3648,9 +3688,13 @@ html.jlm-js .sec-ttl.jlm-on{clip-path:inset(0 0 -20% 0);}
   }
   #jlm-dock .d-badge.on{transform:scale(1);}
 
+  /* La barra se aparta cuando se abre un panel (carrito, buscador, cotizador) */
+  #jlm-dock.jlm-away{transform:translateY(140%) !important;}
+
   /* El botón verde flotante sobra: su sitio está en la barra */
   #wa-float{display:none !important;}
-  #jlp-top{bottom:88px;right:14px;}
+  /* Volver arriba iba a z-index 8000 y flotaba sobre el carrito (7000) */
+  #jlp-top{bottom:88px;right:14px;z-index:4400;}
 
   /* Hueco para que la barra no tape el pie */
   body{padding-bottom:78px;}
@@ -3759,8 +3803,15 @@ if(hero && !REDUCE){
   try{
     var bgs = hero.querySelectorAll('.slide-bg');
     var pRaf = false;
+    /* En el móvil no hay parallax: la holgura de la imagen es pequeña y al
+       desplazarla se despega del borde. Aporta poco y arriesga mucho. */
+    var mobile = window.matchMedia('(max-width:768px)');
     function parallax(){
       pRaf = false;
+      if(mobile.matches){
+        for(var j=0;j<bgs.length;j++) bgs[j].style.translate = '';
+        return;
+      }
       var y = window.scrollY || 0;
       if(y > window.innerHeight) return;
       /* Tope de 40px: es la holgura que da el scale:1.12 del CSS */
@@ -4082,6 +4133,28 @@ try{
     };
     on(window,'scroll',showDock);
     showDock();
+
+    /* Si hay un panel abierto (carrito, buscador, cotizador, producto,
+       brochure o menú), la barra se aparta para no estorbar */
+    var panels = ['cart-drawer','search-overlay','quote-modal','modal-bg','brochure-modal','mob-menu'];
+    var anyOpen = function(){
+      return panels.some(function(id){
+        var el = document.getElementById(id);
+        if(!el) return false;
+        if(el.classList.contains('on') || el.classList.contains('open')) return true;
+        /* el menú móvil se abre con display, no con clase */
+        return el.id === 'mob-menu' && getComputedStyle(el).display !== 'none';
+      });
+    };
+    var watchPanels = function(){ dock.classList.toggle('jlm-away', anyOpen()); };
+    if('MutationObserver' in window){
+      var pmo = new MutationObserver(watchPanels);
+      panels.forEach(function(id){
+        var el = document.getElementById(id);
+        if(el) pmo.observe(el, {attributes:true, attributeFilter:['class','style']});
+      });
+    }
+    watchPanels();
 
     /* El contador refleja el carrito real: leo el badge que ya mantiene la web */
     var src = document.getElementById('cart-count');
